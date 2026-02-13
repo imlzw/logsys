@@ -182,10 +182,12 @@ export default function Home() {
       })
       const res = await fetch(`/api/logs?${params}`)
       const data = await res.json()
-      setLogs(data.logs)
-      setLogsTotal(data.pagination.total)
+      setLogs(data.logs || [])
+      setLogsTotal(data.pagination?.total || 0)
     } catch (error) {
       console.error('Failed to fetch logs:', error)
+      setLogs([])
+      setLogsTotal(0)
     } finally {
       setLoading(false)
     }
@@ -197,10 +199,12 @@ export default function Home() {
     try {
       const res = await fetch(`/api/logs/sessions?page=${sessionsPage}&limit=20`)
       const data = await res.json()
-      setSessions(data.sessions)
-      setSessionsTotal(data.pagination.total)
+      setSessions(data.sessions || [])
+      setSessionsTotal(data.pagination?.total || 0)
     } catch (error) {
       console.error('Failed to fetch sessions:', error)
+      setSessions([])
+      setSessionsTotal(0)
     } finally {
       setLoading(false)
     }
@@ -226,12 +230,17 @@ export default function Home() {
     try {
       const res = await fetch('/api/logs/seed', { method: 'POST' })
       const data = await res.json()
-      alert(`成功生成 ${data.sessionsCreated} 个会话，${data.logsCreated} 条日志`)
-      fetchStats()
-      fetchLogs()
-      fetchSessions()
+      if (res.ok) {
+        alert(`成功生成 ${data.sessionsCreated} 个会话，${data.logsCreated} 条日志`)
+        fetchStats()
+        fetchLogs()
+        fetchSessions()
+      } else {
+        alert(`生成失败: ${data.error || '未知错误'}`)
+      }
     } catch (error) {
       console.error('Failed to seed data:', error)
+      alert('生成失败，请检查数据库是否正确初始化')
     } finally {
       setSeeding(false)
     }
