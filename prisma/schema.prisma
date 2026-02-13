@@ -30,3 +30,28 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// 访问日志模型
+model AccessLog {
+  id           String   @id @default(cuid())
+  sessionId    String   // 会话ID，用于追踪同一用户的访问路径
+  userId       String?  // 用户ID（可选）
+  ipAddress    String?  // IP地址
+  userAgent    String?  // 用户代理
+  path         String   // 访问路径
+  method       String   // 请求方法
+  statusCode   Int      // 状态码
+  responseTime Int?     // 响应时间(ms)
+  referer      String?  // 来源页面
+  country      String?  // 国家
+  city         String?  // 城市
+  device       String?  // 设备类型
+  browser      String?  // 浏览器
+  os           String?  // 操作系统
+  metadata     String?  // 额外元数据(JSON)
+  createdAt    DateTime @default(now())
+  
+  @@index([sessionId])
+  @@index([createdAt])
+  @@index([path])
+}
